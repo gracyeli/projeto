@@ -48,6 +48,37 @@
 		</style>
 		<script defer="defer" type="text/javascript">
 			OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
+
+			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+				defaultHandlerOptions : {
+					'single' : true,
+					'double' : false,
+					'pixelTolerance' : 0,
+					'stopSingle' : false,
+					'stopDouble' : false
+				},
+
+				initialize : function(options) {
+					this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);
+					OpenLayers.Control.prototype.initialize.apply(this, arguments);
+					this.handler = new OpenLayers.Handler.Click(this, {
+						'click' : this.trigger
+					}, this.handlerOptions);
+				},
+
+				trigger : function(e) {
+					var lonlat = map.getLonLatFromViewPortPx(e.xy);
+					  lonlat.transform(
+                      new OpenLayers.Projection("EPSG:4326"), 
+                      new OpenLayers.Projection("EPSG:4326")
+                    );
+					alert("O ponto que voce clicou foi " + "LATITUDE:"+lonlat.lat + " " + 
+														 "LONGITUDE:"+lonlat.lon + " ");
+														
+				}
+			});
+
+			
 			var map, infocontrols, highlightlayer;
 			function load() {
 				var bkey = "AnyGyd4GaAzToU0sDaA0NaXDD88yChcUh8ySoNc32_ddxkrxkl9K5SIATkA8EpMn";
@@ -62,7 +93,7 @@
 				map = new OpenLayers.Map('map', opcoes);
 
 				var pontos = new OpenLayers.Layer.WMS("Pontos", "http://localhost:8080/geoserver/trmm/wms", {
-					LAYERS: 'trmm:pontos'  
+					LAYERS : 'trmm:pontos'
 				}, {
 					buffer : 0,
 					displayOutsideMaxExtent : true,
@@ -71,7 +102,7 @@
 						'EPSG:4326' : true
 					}
 				});
-				
+
 				var bing = new OpenLayers.Layer.Bing({
 					name : "Bing Satellite",
 					key : bkey,
@@ -111,7 +142,7 @@
 				map.addLayers([pontos, bing, road, highlightLayer]);
 				for (var i in infoControls) {
 					infoControls[i].events.register("getfeatureinfo", this, showInfo);
-					
+
 					map.addControl(infoControls[i]);
 				}
 				// Adicionando controles
@@ -124,11 +155,16 @@
 				map.addControl(new OpenLayers.Control.MousePosition());
 				map.addControl(new OpenLayers.Control.OverviewMap());
 				map.addControl(new OpenLayers.Control.KeyboardDefaults());
-				
+
 				infoControls.click.activate();
+				var click = new OpenLayers.Control.Click();
+				map.addControl(click);
+				click.activate();
+
 				map.zoomToMaxExtent(bounds);
 
 			}
+
 			var a;
 			function showInfo(evt) {
 				if (evt.features && evt.features.length) {
@@ -136,10 +172,10 @@
 					highlightLayer.addFeatures(evt.features);
 					highlightLayer.redraw();
 				} else {
+					
 					document.getElementById('responseText').innerHTML = evt.text;
 				}
 			}
-
 
 			function toggleControl(element) {
 				for (var key in infoControls) {
@@ -169,8 +205,7 @@
 					}
 				}
 			}
-		
-						
+
 			// function toggle(key);
 
 		</script>
@@ -184,23 +219,20 @@
 			Dados de precipitação.
 		</p>
 		<div id="info">
-		<br>
-		<br>
-		<br>
-		<br>
+			<br>
+			<br>
+			<br>
+			<br>
 			<h1>Trmm</h1>
 			<p>
 				Clique no mapa para obter informacoes.
 			</p>
 			<div id="responseText"></div>
-			
-				
 
-			
 		</div>
 
 		<form action="conecta.php" method="POST">
-				
+
 			ID do ponto:
 			<input type="text" name="idPonto"/>
 			<br>

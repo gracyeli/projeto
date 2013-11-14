@@ -21,7 +21,7 @@ $horafinal = $_POST['horafinal'];
 
 
 $pg_con = new conexao();
-$teste = $pg_con->CRUD('read', 'select hora, data, precipitac, latitude, longitude from seriehist,pontos where 
+$teste = $pg_con->CRUD('read', 'select hora, data, precipitac, latitude, longitude from pontos,seriehist where 
 pontosfk = ? and gid = ? and data >= ? and data <= ? and hora >= ? and hora <= ? order by data,hora', 
 array($ponto,$ponto,$datainicio,$datafinal,$horainicio,$horafinal));
 ?>
