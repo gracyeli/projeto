@@ -18,7 +18,7 @@
 			#info {
 				position: absolute;
 				top: 6em;
-				left: 550px;
+				left: 700px;
 			}
 			#info table td {
 				border: 1px solid #ddd;
@@ -49,34 +49,7 @@
 		<script defer="defer" type="text/javascript">
 			OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
 
-			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-				defaultHandlerOptions : {
-					'single' : true,
-					'double' : false,
-					'pixelTolerance' : 0,
-					'stopSingle' : false,
-					'stopDouble' : false
-				},
 
-				initialize : function(options) {
-					this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);
-					OpenLayers.Control.prototype.initialize.apply(this, arguments);
-					this.handler = new OpenLayers.Handler.Click(this, {
-						'click' : this.trigger
-					}, this.handlerOptions);
-				},
-
-				trigger : function(e) {
-					var lonlat = map.getLonLatFromViewPortPx(e.xy);
-					  lonlat.transform(
-                      new OpenLayers.Projection("EPSG:4326"), 
-                      new OpenLayers.Projection("EPSG:4326")
-                    );
-					alert("O ponto que voce clicou foi " + "LATITUDE:"+lonlat.lat + " " + 
-														 "LONGITUDE:"+lonlat.lon + " ");
-														
-				}
-			});
 
 			
 			var map, infocontrols, highlightlayer;
@@ -85,7 +58,7 @@
 				var bounds = new OpenLayers.Bounds(-61.875, -22.125, -50.2247507568401, -7.34904988281315);
 				var opcoes = {
 					maxExtent : bounds,
-					maxResolution : 0.0577185551452611,
+					maxResolution : 0.025,
 					projection : "EPSG:4326",
 					units : 'degrees'
 				};
@@ -140,6 +113,7 @@
 				};
 
 				map.addLayers([pontos, bing, road, highlightLayer]);
+		 
 				for (var i in infoControls) {
 					infoControls[i].events.register("getfeatureinfo", this, showInfo);
 
@@ -157,11 +131,14 @@
 				map.addControl(new OpenLayers.Control.KeyboardDefaults());
 
 				infoControls.click.activate();
-				var click = new OpenLayers.Control.Click();
-				map.addControl(click);
-				click.activate();
+				
 
 				map.zoomToMaxExtent(bounds);
+				map.setCenter(new OpenLayers.LonLat(-57.625, -17.125).transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    map.getProjectionObject()
+                ));
+				
 
 			}
 
@@ -172,6 +149,21 @@
 					highlightLayer.addFeatures(evt.features);
 					highlightLayer.redraw();
 				} else {
+					
+					//Aqui a gente pega o que esta dentro da caixinha.
+					var parte1 = $("#gidbuscado").val();
+					
+					//Depois que se clica num ponto, se quebra a resposta atras da chave.
+					var parte2 = evt.text.split("<td>")[2].split("</td>")[0];
+					
+					//Aqui a gente coloca dentro da caixinha.
+					if(parte1 == ""){
+						//se nao tiver nada na caixinha, ele coloca o ponto clicado
+						$("#gidbuscado").val(parte2);
+					}else{
+						//se ja tiver coisa na caixinha, ele pega o da caixinha e adiciona ponto e virgula e o novo.
+						$("#gidbuscado").val(parte1 + "; " + parte2);
+					}
 					
 					document.getElementById('responseText').innerHTML = evt.text;
 				}
@@ -231,22 +223,22 @@
 
 		</div>
 
-		<form action="conecta.php" method="POST">
+		<form target="_blank"  action="conecta.php" method="POST"  >
 
 			ID do ponto:
-			<input type="text" name="idPonto"/>
+			<input type="text" id="gidbuscado" required name="idPonto"/>
 			<br>
 			Data de inicio:
-			<input type="text" name="datainicio">
+			<input type="text" required name="datainicio">
 			Hora de inicio:
-			<input type="text" name="horainicio">
+			<input type="text" required name="horainicio">
 			<br>
 			Data final:
-			<input type="text" name="datafinal">
+			<input type="text" required name="datafinal">
 			Hora final:
-			<input type="text" name="horafinal">
+			<input type="text" required name="horafinal">
 			<br>
-			<input type="submit" value="Buscar">
+			<input type="submit" value="Buscar" >
 		</form>
 
 		<div id="map" class="smallmap"></div>
@@ -269,6 +261,7 @@
 				<input type="radio" name="formatType" value="text/html" id="html"
 				onclick="toggleFormat(this);" checked="checked" />
 				<label for="html">Mostrar dados</label>
+				
 			</li>
 			<li>
 				<input type="radio" name="formatType" value="application/vnd.ogc.gml" id="highlight"

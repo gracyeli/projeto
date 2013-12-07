@@ -1,59 +1,63 @@
 <?php
-include("con.php");
-/*
-$conn = pg_connect('host=localhost  port=5432 dbname=trmmNormal user=postgres password=1') or die('Erro ao conectar.');
-
-print "<h2>NOME DO BANCO CONECTADO</h2>";
-  echo pg_dbname(); // mary
-  
-   if ($dbcon) {
-       echo "<br>Conectado com sucesso ao banco: " . pg_dbname($dbcon) .
-         " em " .  pg_host($dbcon) . "<br/>\n";
-   } else {
-       print pg_last_error($dbcon);
-       exit;
-   }*/
-$ponto = $_POST['idPonto'];
-$datainicio = $_POST['datainicio'];
-$horainicio = $_POST['horainicio'];
-$datafinal = $_POST['datafinal'];
-$horafinal = $_POST['horafinal'];
-
-
-$pg_con = new conexao();
-$teste = $pg_con->CRUD('read', 'select hora, data, precipitac, latitude, longitude from pontos,seriehist where 
-pontosfk = ? and gid = ? and data >= ? and data <= ? and hora >= ? and hora <= ? order by data,hora', 
-array($ponto,$ponto,$datainicio,$datafinal,$horainicio,$horafinal));
-?>
-<table border="1" style="border-collapse: collapse">
-
-<tr><td>Hora</td>
-<td>Data</td>
-<td>Precipitação</td>
-<td>Latitude</td>
-<td>Longitude</td>
-</tr>
-<?php
-//$teste = new ArrayObject($teste);
-//$teste = $teste->getArrayCopy();
-
-for($i=0;$i<count($teste);$i++){
-	echo"<tr>";		
 	
+	include ("con.php");
+	
+	$ponto = $_POST['idPonto'];
+	$datainicio = $_POST['datainicio'];
+	$horainicio = $_POST['horainicio'];
+	$datafinal = $_POST['datafinal'];
+	$horafinal = $_POST['horafinal'];
+	
+	/*$p_dtinicio = explode('/',$datainicio);
+	$dataInicio1 = $p_dtinicio[2].'-'.$p_dtinicio[1].'-'.$p_dtinicio[0];
+	return $dataInicio1;
+	
+	$p_dt = explode('/',$datafinal);
+	$dataFinal1 = $p_dt[2].'-'.$p_dt[1].'-'.$p_dt[0];
+	return $dataFinal1;*/
+	
+	$lista_pontos = explode(";", $ponto);
+	$tamanho = count($lista_pontos);
+	
+	for ($j = 0; $j < $tamanho; $j++) {
 
-	echo"<td>". $teste[$i]->hora ."</td>";
-	echo"<td>". $teste[$i]->data ."</td>";
-	echo"<td>". $teste[$i]->precipitac ."</td>";
-	echo"<td>". $teste[$i]->latitude ."</td>";
-	echo"<td>". $teste[$i]->longitude ."</td>";
- 
-	echo"</tr>";
-	//var_dump($teste[$i]);
+		echo "<table border='1' style='border-collapse: collapse'>";
+		echo "<tr> <td>Identificador</td> <td>Hora</td>	<td>Data</td> <td>Precipitacao</td> <td>Latitude</td>";
+		echo "<td>Longitude</td></tr>";
+			
+		$pg_con = new conexao();
 	
+		$teste = $pg_con -> CRUD('read', 'SELECT pontosfk, 
+			       hora, 
+			       data, 
+			       precipitac, 
+			       latitude, 
+			       longitude 
+			FROM   pontos 
+			       INNER JOIN seriehist 
+			               ON pontosfk = ? 
+			                  AND gid = ? 
+			                  AND data >= ? 
+			                  AND data <= ? 
+			                  AND hora >= ? 
+			                  AND hora <= ? 
+			ORDER  BY data, 
+		          hora', array($lista_pontos[$j], $lista_pontos[$j], $datainicio, $datafinal, $horainicio, $horafinal));
 	
-}
-?>
-</table>
-<?php
-   
+		for ($i = 0; $i < count($teste); $i++) {
+				
+			echo "<tr>";
+				
+			echo "<td>" . $teste[$i] -> pontosfk . "</td>";
+			echo "<td>" . $teste[$i] -> hora . "</td>";
+			echo "<td>" . $teste[$i] -> data . "</td>";
+			echo "<td>" . $teste[$i] -> precipitac . "</td>";
+			echo "<td>" . $teste[$i] -> latitude . "</td>";
+			echo "<td>" . $teste[$i] -> longitude . "</td>";
+				
+			echo "</tr>";
+		}
+		
+		echo "</table><br>";
+	}
 ?>
