@@ -54,14 +54,12 @@
 			
 			var map, infocontrols, highlightlayer;
 			function load() {
-				var bkey = "AnyGyd4GaAzToU0sDaA0NaXDD88yChcUh8ySoNc32_ddxkrxkl9K5SIATkA8EpMn";
 				var bounds = new OpenLayers.Bounds(-61.875, -22.125, -50.2247507568401, -7.34904988281315);
 				var opcoes = {
 					maxExtent : bounds,
 					maxResolution : 0.025,
 					projection : "EPSG:4326",
-					units : 'degrees'
-				};
+					};
 
 				map = new OpenLayers.Map('map', opcoes);
 
@@ -74,17 +72,6 @@
 					yx : {
 						'EPSG:4326' : true
 					}
-				});
-
-				var bing = new OpenLayers.Layer.Bing({
-					name : "Bing Satellite",
-					key : bkey,
-					type : "AerialWithLabels"
-				});
-				var road = new OpenLayers.Layer.Bing({
-					name : "Bing Mapa",
-					type : "Road",
-					key : bkey
 				});
 
 				highlightLayer = new OpenLayers.Layer.Vector("Highlighted Features", {
@@ -112,7 +99,7 @@
 					})
 				};
 
-				map.addLayers([pontos, bing, road, highlightLayer]);
+				map.addLayers([pontos, highlightLayer]);
 		 
 				for (var i in infoControls) {
 					infoControls[i].events.register("getfeatureinfo", this, showInfo);
@@ -121,7 +108,7 @@
 				}
 				// Adicionando controles
 				map.addControl(new OpenLayers.Control.Navigation());
-				map.addControl(new OpenLayers.Control.LayerSwitcher());
+				map.addControl(new OpenLayers.Control.LayerSwitcher({'ascending':false}));
 				map.addControl(new OpenLayers.Control.MousePosition());
 				map.addControl(new OpenLayers.Control.ScaleLine());
 				map.addControl(new OpenLayers.Control.OverviewMap());
@@ -137,7 +124,7 @@
 				map.setCenter(new OpenLayers.LonLat(-57.625, -17.125).transform(
                     new OpenLayers.Projection("EPSG:4326"),
                     map.getProjectionObject()
-                ));
+                    ));
 				
 
 			}
@@ -238,7 +225,9 @@
 			Hora final:
 			<input type="text" required name="horafinal">
 			<br>
-			<input type="submit" value="Buscar" >
+			<input type="submit" value="Buscar" name="buscar">
+			<input type="submit" name="csv" value="Salvar em CSV" />
+			
 		</form>
 
 		<div id="map" class="smallmap"></div>
