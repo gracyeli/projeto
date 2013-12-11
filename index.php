@@ -187,32 +187,71 @@
 			// function toggle(key);
 
 		</script>
-
+<script>
+function fctValidaData(obj)
+{
+    var data = obj.value;
+    var dia = data.substring(0,2);
+    var mes = data.substring(3,5);
+    var ano = data.substring(6,10);
+ 
+    //Criando um objeto Date usando os valores ano, mes e dia.
+    var novaData = new Date(ano,(mes-1),dia);
+ 
+    var mesmoDia = parseInt(dia,10) == parseInt(novaData.getDate());
+    var mesmoMes = parseInt(mes,10) == parseInt(novaData.getMonth())+1;
+    var mesmoAno = parseInt(ano) == parseInt(novaData.getFullYear());
+  
+    if (!((mesmoAno) && (mesmoMes) && (mesmoDia)))
+    {
+        alert('Data informada é inválida!');   
+       //obj.focus();    
+        return false;
+    }  
+    return true;
+}
+</script>
+<script>
+function validahora (obj) {
+  var hora = obj.value;
+  if(hora !=0 && hora !=3 && hora !=6 && hora !=9 && hora !=12 && hora !=15 && hora !=18 && hora !=21){
+alert('Os valores para hora são :0, 3, 6, 9, 12, 15, 18, 21');
+return false;
+}
+return true;
+  
+}
+	
+</script>
 	</head>
 
 	<body onload="load()">
 		<div id="info">
 			<h1 id="title">Gerenciador de dados TRMM - Dados de precipitação</h1>
 			<p id="shortdesc">
-				
+				<b>Digite uma data entre 01/01/1998 a 30/06/2011<br>
+				   Valores para hora: 0, 3, 6, 9, 12, 15, 18, 21
+					</b>
 			</p>
 			<form target="_blank"  action="conecta.php" method="POST"  >
+				<br>
 				ID do ponto:
 				<p>
 					<textarea rows="2" id="gidbuscado" required name="idPonto" cols="63"></textarea>
 				</p>
 
 				Data de inicio:
-				<input type="text" required name="datainicio" size="10" value="AAAA-MM-DD" maxlength="10" onclick="this.value=''">
+				<input type="text" required name="datainicio" size="10" value="dd-mm-aaaa" maxlength="10" onblur="fctValidaData(this);" onclick="this.value=''" >
 				Data final:
-				<input type="text" required name="datafinal" size="10" value="AAAA-MM-DD" maxlength="10" onclick="this.value=''" >
+				<input type="text" required name="datafinal" size="10"  value="dd-mm-aaaa" maxlength="10" onblur="fctValidaData(this);" onclick="this.value=''" >
 				<br>
 				Hora de inicio:
-				<input type="text" required name="horainicio" size="10">
+				<input type="text" required name="horainicio" size="10"  onblur="validahora(this)">
 				Hora final:
-				<input type="text" required name="horafinal" size="10">
+				<input type="text" required name="horafinal" size="10"  onblur="validahora(this)">
 				<br>
 				<input type="submit" value="Buscar" name="buscar">
+				<input type= 'submit' name='csv' value='Salvar em CSV' />
 				
 				
 				<br>
