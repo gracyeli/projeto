@@ -269,32 +269,7 @@ return true;
 					<label for="hover">Passe o mouse para mostrar os dados</label>
 				</li>
 			</ul>
-			<ul id="format">
-				<li>
-					<input type="radio" name="formatType" value="text/html" id="html"
-					onclick="toggleFormat(this);" checked="checked" />
-					<label for="html">Mostrar dados</label>
 
-				</li>
-				<li>
-					<input type="radio" name="formatType" value="application/vnd.ogc.gml" id="highlight"
-					onclick="toggleFormat(this);" />
-					<label for="highlight">Destaque de recursos no mapa</label>
-				</li>
-			</ul>
-			<ul id="layers">
-				<li>
-					<input type="radio" name="layerSelection" value="Specified" id="Specified"
-					onclick="toggleLayers(this);" checked="checked" />
-					<label for="Specified">Informacoes dos pontos</label>
-				</li>
-
-				<li>
-					<input type="radio" name="layerSelection" value="Auto" id="Auto"
-					onclick="toggleLayers(this);" />
-					<label for="Auto">Informacoes gerais</label>
-				</li>
-			</ul>
 			
 			<h1>Trmm</h1>
 			<p>
